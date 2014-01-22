@@ -12,3 +12,8 @@ mkdir -p vendor/gifsicle
 cd vendor/gifsicle
 
 curl -L --silent http://jc4p.github.io/heroku-buildpack-gifsicle/bin/gifsicle-1.78.tar.gz | tar xz
+
+PROFILE_PATH="$1/.profile.d/gifsicle.sh"
+mkdir -p $(dirname $PROFILE_PATH)
+echo 'export PATH="$PATH:vendor/gifsicle/bin"' >> $PROFILE_PATH
+
