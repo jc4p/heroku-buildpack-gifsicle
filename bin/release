@@ -3,5 +3,5 @@
 echo "---"
 echo "addons:"
 echo "config_vars:"
-echo "  PATH: $PATH:/app/vendor/gifsicle"
+echo "  PATH: $PATH:/app/vendor/gifsicle/bin"
 echo "default_process_types:"
