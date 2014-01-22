@@ -9,5 +9,6 @@ cd $1
 curl -s -O http://jc4p.github.io/heroku-buildpack-gifsicle/bin/gifsicle-1.78.tar.gz
 
 mkdir -p vendor/gifsicle
+cd vendor/gifsicle
 
-tar -C vendor/gifsicle -xvf gifsicle-1.78.tar.gz
+curl -L --silent http://jc4p.github.io/heroku-buildpack-gifsicle/bin/gifsicle-1.78.tar.gz | tar xz
