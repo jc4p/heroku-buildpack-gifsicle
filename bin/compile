@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+# bin/compile <build-dir> <cache-dir>
+
+echo "-----> Installing gifsicle"
+
+# change to the the BUILD_DIR ($1)
+cd $1
+
+curl -s -O http://jc4p.github.io/heroku-buildpack-gifsicle/bin/gifsicle-1.78.tgz
+
+mkdir -p vendor/gifsicle
+
+tar -C vendor/gifsicle -xvf gifsicle-1.78.tgz
