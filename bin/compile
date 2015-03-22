@@ -1,19 +1,29 @@
 #!/usr/bin/env bash
 # bin/compile <build-dir> <cache-dir>
+TAR_URL=https://github.com/kohler/gifsicle/archive/v1.87.tar.gz
 
 echo "-----> Installing gifsicle"
 
+VENDOR_PATH=$1/vendor
+PROFILE_PATH="$1/.profile.d"
+INSTALL_PATH="$VENDOR_PATH/gifsicle"
+
 # change to the the BUILD_DIR ($1)
 cd $1
-
-curl -s -O http://jc4p.github.io/heroku-buildpack-gifsicle/bin/gifsicle-1.78.tar.gz
-
 mkdir -p vendor/gifsicle
 cd vendor/gifsicle
 
-curl -L --silent http://jc4p.github.io/heroku-buildpack-gifsicle/bin/gifsicle-1.78.tar.gz | tar xz
+TAR_URL=https://github.com/kohler/gifsicle/archive/v1.87.tar.gz
+curl -L --silent $TAR_URL | tar xz
 
-PROFILE_PATH="$1/.profile.d/gifsicle.sh"
-mkdir -p $(dirname $PROFILE_PATH)
-echo 'export PATH="$PATH:vendor/gifsicle/bin"' >> $PROFILE_PATH
+cd gifsicle-1.87
 
+./bootstrap.sh
+autoconf ./configure.ac
+
+./configure --disable-gifview --prefix="$INSTALL_PATH"
+make
+make install
+
+mkdir $PROFILE_PATH
+echo 'export PATH="$PATH:/app/vendor/gifsicle/bin"' >> "$PROFILE_PATH/gifsicle.sh"
