@@ -19,7 +19,7 @@ curl -L --silent $TAR_URL | tar xz
 cd gifsicle-1.87
 
 ./bootstrap.sh
-autoconf ./configure.ac
+autoconf -i
 
 ./configure --disable-gifview --prefix="$INSTALL_PATH"
 make
