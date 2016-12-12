@@ -1,29 +1,55 @@
 #!/usr/bin/env bash
 # bin/compile <build-dir> <cache-dir>
-TAR_URL=https://github.com/kohler/gifsicle/archive/v1.87.tar.gz
+set -o errexit
+set -o nounset
+set -o pipefail
+
+indent() {
+  sed -u 's/^/       /'
+}
+
+VERSION="1.87"
+TAR_URL="https://github.com/kohler/gifsicle/archive/v$VERSION.tar.gz"
 
 echo "-----> Installing gifsicle"
 
-VENDOR_PATH=$1/vendor
-PROFILE_PATH="$1/.profile.d"
-INSTALL_PATH="$VENDOR_PATH/gifsicle"
+BUILD_DIR=$1
+CACHE_DIR=$2
 
-# change to the the BUILD_DIR ($1)
-cd $1
-mkdir -p vendor/gifsicle
-cd vendor/gifsicle
+VENDOR_DIR="$BUILD_DIR/vendor"
+INSTALL_DIR="$VENDOR_DIR/gifsicle"
+PROFILE_DIR="$BUILD_DIR/.profile.d"
+CACHE_FILE="$CACHE_DIR/gifsicle-$VERSION.tar.gz"
 
-TAR_URL=https://github.com/kohler/gifsicle/archive/v1.87.tar.gz
-curl -L --silent $TAR_URL | tar xz
+if [ ! -f "$CACHE_FILE" ]; then
+  mkdir -p "$INSTALL_DIR"
+  cd "$INSTALL_DIR"
 
-cd gifsicle-1.87
+  echo "-----> Downloading gifsicle from $TAR_URL"
+  curl -L --silent $TAR_URL | tar xz
 
-./bootstrap.sh
-autoconf -i
+  echo "-----> Building gifsicle"
+  cd "gifsicle-$VERSION/"
 
-./configure --disable-gifview --prefix="$INSTALL_PATH"
-make
-make install
+  ./bootstrap.sh | indent
+  autoconf -i | indent
 
-mkdir $PROFILE_PATH
-echo 'export PATH="$PATH:/app/vendor/gifsicle/bin"' >> "$PROFILE_PATH/gifsicle.sh"
+  ./configure --disable-gifview --prefix="$INSTALL_DIR" | indent
+  make | indent
+  make install | indent
+
+  rm -rf "gifsicle-$VERSION/"
+
+  echo "-----> Caching gifsicle installation"
+  cd "$VENDOR_DIR"
+  REL_INSTALL_DIR="gifsicle"
+  tar czf "$REL_INSTALL_DIR.tar.gz" "$REL_INSTALL_DIR"
+  mv "$REL_INSTALL_DIR.tar.gz" "$CACHE_FILE"
+else
+  echo "-----> Extracting gifsicle from cache $CACHE_FILE => $VENDOR_DIR"
+  tar xzf "$CACHE_FILE" -C "$VENDOR_DIR"
+fi
+
+echo "-----> Updating environment"
+mkdir -p "$PROFILE_DIR"
+echo "export PATH=\"\$PATH:/app/vendor/gifsicle/bin\"" >> "$PROFILE_DIR/gifsicle.sh"
