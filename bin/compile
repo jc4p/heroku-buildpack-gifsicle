@@ -8,7 +8,7 @@ indent() {
   sed -u 's/^/       /'
 }
 
-VERSION="1.87"
+VERSION="1.92"
 TAR_URL="https://github.com/kohler/gifsicle/archive/v$VERSION.tar.gz"
 
 echo "-----> Installing gifsicle"
